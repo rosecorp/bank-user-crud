@@ -56,7 +56,7 @@ public class UserEndpoint {
     @PostMapping("/v1/users")
     public List<UserResponseDto> fetchUsersAsFilteredList(@Parameter(description="Search criteria") @RequestBody UserSearchDto userSearchDto) throws ResourceNotFoundException {
         List<User> users = userService.fetchFilteredUserDataAsList(userSearchDto.getFirstName(), userSearchDto.getLastName(), userSearchDto.getId());
-        if (users.isEmpty())  throw new ResourceNotFoundException("User not found");
+        if (users.isEmpty()) throw new ResourceNotFoundException("User not found");
 
         return userDtoAssembler.toUserResponseDtos(users);
     }
@@ -93,13 +93,14 @@ public class UserEndpoint {
             @ApiResponse(responseCode = "200", description = "successful operation"),
             @ApiResponse(responseCode = "404", description = "User not found") })
     @DeleteMapping("/v1/user/{id}")
-    public Map < String, Boolean > deleteUser(@Parameter(description="Id of the user to be deleted. Cannot be empty.", required=true) @PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
+    public Map <String, Boolean> deleteUser(@Parameter(description="Id of the user to be deleted. Cannot be empty.", required=true) @PathVariable(value = "id") UUID id) throws ResourceNotFoundException {
         User user = userService.findUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + id));
 
         userService.deleteUser(user.getId());
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
+
         return response;
     }
 
