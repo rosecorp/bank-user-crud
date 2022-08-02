@@ -1,4 +1,3 @@
-# Build Status
 [![Build Status](https://app.travis-ci.com/rosecorp/bank-user-crud.svg?branch=main)](https://app.travis-ci.com/rosecorp/bank-user-crud)
 
 # User Bank Application
