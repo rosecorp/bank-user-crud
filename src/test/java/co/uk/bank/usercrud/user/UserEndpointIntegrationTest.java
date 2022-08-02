@@ -88,6 +88,47 @@ class UserEndpointIntegrationTest {
         assertThat(userResponseDtos).isNotEmpty();
     }
 
+    @Test
+    public void testFetchUser() {
+        //given:
+        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+
+        //when:
+        Map<String, UUID> createdUser = userEndpoint.createUser(user);
+
+        //then:
+        userExistsInRepository(createdUser);
+
+        //and:
+        UserSearchDto userSearchDto = new UserSearchDto();
+        userSearchDto.setFirstName("Ja");
+
+        List<UserResponseDto> userResponseDtos = userEndpoint.fetchUsersAsFilteredList(userSearchDto);
+
+        //then:
+        assertThat(userResponseDtos).first()
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("firstName", "Jacob");
+    }
+
+    @Test
+    public void testDeleteUser() {
+        //given:
+        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+
+        //when:
+        Map<String, UUID> createdUser = userEndpoint.createUser(user);
+
+        //then:
+        userExistsInRepository(createdUser);
+
+        //and:
+        userEndpoint.deleteUser(createdUser.get("id"));
+
+        //then:
+        assertThat(userRepository.findById(createdUser.get("id"))).isEmpty();
+    }
+
     private void userExistsInRepository(Map<String, UUID> createdUser) {
         //when:
         List<User> allUsers = userRepository.findAll();
