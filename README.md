@@ -1,3 +1,6 @@
+# Build Status
+[![Build Status](https://app.travis-ci.com/rosecorp/bank-user-crud.svg?branch=main)](https://app.travis-ci.com/rosecorp/bank-user-crud)
+
 # User Bank Application
 User Bank Application allows performing CRUD operations on the User object.
 
