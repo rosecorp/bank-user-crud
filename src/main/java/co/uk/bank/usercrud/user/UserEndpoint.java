@@ -1,9 +1,6 @@
 package co.uk.bank.usercrud.user;
 
-import co.uk.bank.usercrud.user.dto.UserPaginationModelDto;
-import co.uk.bank.usercrud.user.dto.UserPaginationModelDtoAssembler;
-import co.uk.bank.usercrud.user.dto.UserRequestDto;
-import co.uk.bank.usercrud.user.dto.UserResponseDto;
+import co.uk.bank.usercrud.user.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -42,22 +39,19 @@ public class UserEndpoint {
     @Autowired
     private PagedResourcesAssembler<User> pagedResourcesAssembler;
 
+
     /**
-     * @param idFilter Filter for the Id if required - like match
-     * @param firstNameFilter Filter for the First Name if required - like match
-     * @param lastNameFilter  Filter for the Last Name if required - like match
-     * @return List of filtered users
+     * @param  userSearchDto   Search criteria - firstName, lastName, id
+     * @return List<UserResponseDto> users after search
      */
     @Operation(summary = "Simple API - Find User by first name or last name or id", description = "Simple API - Find user by firstNameFilter or lastNameFilter or idFilter", tags = { "user" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "404", description = "User not found") })
-    @GetMapping("/v1/users")
-    public List<UserResponseDto> fetchUsersAsFilteredList(@Parameter(description="First Name Filter, default empty") @RequestParam(defaultValue = "") String firstNameFilter,
-                                                          @Parameter(description="Last Name Filter, default empty") @RequestParam(defaultValue = "") String lastNameFilter,
-                                                          @Parameter(description="ID Filter, default empty") @RequestParam(defaultValue = "") UUID idFilter) throws ResourceNotFoundException {
-        List<User> users = userService.fetchFilteredUserDataAsList(firstNameFilter, lastNameFilter, idFilter);
+    @PostMapping("/v1/users")
+    public List<UserResponseDto> fetchUsersAsFilteredList(@RequestBody UserSearchDto userSearchDto) throws ResourceNotFoundException {
+        List<User> users = userService.fetchFilteredUserDataAsList(userSearchDto.getFirstName(), userSearchDto.getLastName(), userSearchDto.getId());
         if (users.isEmpty())  throw new ResourceNotFoundException("User not found");
 
         return toUserResponseDtos(users);
@@ -106,33 +100,28 @@ public class UserEndpoint {
     }
 
     /**
-     * @param firstNameFilter Filter for the First Name if required - like match
-     * @param lastNameFilter  Filter for the Last Name if required - like match
-     * @param idFilter        Filter for the id if required - like match
+     * @param userSearchDto   Search criteria - firstName, lastName, id
      * @param page            number of the page returned
      * @param size            number of entries in each page
      * @param sortList        list of columns to sort on
      * @param sortOrder       sort order. Can be ASC or DESC
-     * @return PagedModel object in Hateoas with customers after filtering and sorting
+     * @return PagedModel object in Hateoas with users after filtering and sorting
      */
-    @GetMapping("/v2/users")
+    @PostMapping("/v2/users")
     @Operation(summary = "Find User by first name or last name in Hateoas Representation", description = "Paginated results with sort order and sort list elements available", tags = { "user" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "404", description = "User not found") })
-    public PagedModel<UserPaginationModelDto> fetchUsersWithPagination(
-            @Parameter(description="First Name Filter, default empty")@RequestParam(defaultValue = "") String firstNameFilter,
-            @Parameter(description="Last Name Filter, default empty") @RequestParam(defaultValue = "") String lastNameFilter,
-            @Parameter(description="ID Filter, default empty") @RequestParam(defaultValue = "") UUID idFilter,
+    public PagedModel<UserPaginationModelDto> fetchUsersWithPagination(@RequestBody UserSearchDto userSearchDto,
             @Parameter(description="Page number, default 0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description="Results number on the page, default 30") @RequestParam(defaultValue = "30") int size,
             @Parameter(description="number of fields sorted by, default empty") @RequestParam(defaultValue = "") List<String> sortList,
             @Parameter(description="Sorting, default DESC") @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) throws ResourceNotFoundException {
-        Page<User> customerPage = userService.fetchUserDataAsPageWithFilteringAndSorting(firstNameFilter, lastNameFilter, idFilter, page, size, sortList, sortOrder.toString());
-        if (!customerPage.hasContent()) { throw new ResourceNotFoundException("User not found"); }
+        Page<User> userPage = userService.fetchUserDataAsPageWithFilteringAndSorting(userSearchDto.getFirstName(), userSearchDto.getLastName(), userSearchDto.getId(), page, size, sortList, sortOrder.toString());
+        if (!userPage.hasContent()) { throw new ResourceNotFoundException("User not found"); }
         // Use the pagedResourcesAssembler and userPaginationModelDtoAssembler to convert data to PagedModel format
-        return pagedResourcesAssembler.toModel(customerPage, userPaginationModelDtoAssembler);
+        return pagedResourcesAssembler.toModel(userPage, userPaginationModelDtoAssembler);
     }
 
 }

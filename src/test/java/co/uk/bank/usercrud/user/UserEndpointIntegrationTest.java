@@ -1,6 +1,7 @@
 package co.uk.bank.usercrud.user;
 
 import co.uk.bank.usercrud.user.dto.UserRequestDto;
+import co.uk.bank.usercrud.user.dto.UserSearchDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,13 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +33,7 @@ class UserEndpointIntegrationTest {
     @Test
     public void testCreateUser() {
 
+        //given:
         @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", parseDate("2000-02-02"), "IT dude");
 
         //when:
@@ -48,7 +46,10 @@ class UserEndpointIntegrationTest {
         userEndpoint.deleteUser(createdUser.get("id"));
 
         //then:
-        assertThrows(ResourceNotFoundException.class, () -> userEndpoint.fetchUsersAsFilteredList(null, null, createdUser.get("id")));
+        UserSearchDto userSearchDto = new UserSearchDto();
+        userSearchDto.setId(createdUser.get("id"));
+
+        assertThrows(ResourceNotFoundException.class, () -> userEndpoint.fetchUsersAsFilteredList(userSearchDto));
 
     }
 
@@ -74,11 +75,4 @@ class UserEndpointIntegrationTest {
                 .hasFieldOrPropertyWithValue("deleted", false);
     }
 
-//    @Test
-//    @Sql(scripts={"classpath:test-data.sql"},
-//            config=@SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED),
-//            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-//    public void testUpdateUser() {
-//
-//    }
 }

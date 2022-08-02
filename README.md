@@ -10,7 +10,7 @@ Application can treat data as follow
 2. Create a user
 3. Update a user
 4. Soft delete users
-5. Filtered and sorted, in page format with links to other pages as well
+5. Filtered and sorted, in Hateo format with links to other pages as well
 
 ## Goals 
 This application support simple API V1 for basic consumer but also has v2 API that returns data in paginated and sorted format.
@@ -66,10 +66,19 @@ To test the application, below are the endpoints that can be executed once the a
 You can directly try the Url on your web browser or use tools such as postman.
 
 
-### Endpoint 1: As a filtered List
-Request Type: GET
-Request Url: http://localhost:8183/api/v1/users?firstNameFilter=R&lastNameFilter=M
+### Endpoint 1: User can be found using search criteria
+Request Type: POST
+Request Url: http://localhost:8183/api/v1/users
 Description:  This url returns ALL the users as a List after applying filter conditions to first name and last name and id.
+Search Request:
+```
+{
+  "id": "ca24755d-91e5-4c56-82af-507bf2461754",
+  "firstName": "John",
+  "lastName": "Smith"
+}
+```
+
 Response Format:
 ```
 [{
@@ -82,14 +91,21 @@ Response Format:
     "createdStamp": "2022-08-01T21:33:16.925Z"
 }]
 ```
-Alternative Test Urls:
-http://localhost:8183/api/v1/users?firstNameFilter=R
 
 
 ### Endpoint 2: Filtered and sorted but in page format(without hateoas and links to other pages)
-Request Type: GET
-Request Url: http://localhost:8183/api/v2/users?firstNameFilter=R&lastNameFilter=M&page=0&size=10&sortList=firstName&sortOrder=ASC
+Request Type: POST
+Request Url: http://localhost:8183/api/v2/users?page=0&size=10&sortList=firstName&sortOrder=ASC
 Description: This url returns the users of the specified page with the specified size, after applying filter conditions to first name and last name and sorting the data.
+
+Search Request:
+```
+{
+  "id": "ca24755d-91e5-4c56-82af-507bf2461754",
+  "firstName": "John",
+  "lastName": "Smith"
+}
+```
 Response Format:
 ```
    {
@@ -175,7 +191,7 @@ Response Format:
 }
 ```
 
-### Endpoint 5: User can be created by the PUT operation
+### Endpoint 5: User can be updated by the PUT operation
 Request Type: PUT
 Request Url: http://localhost:8183/api/v1/user/3fa85f64-5717-4562-b3fc-2c963f66afa6
 Response Body:
