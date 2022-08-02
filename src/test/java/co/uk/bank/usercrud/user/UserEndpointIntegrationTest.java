@@ -13,6 +13,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,23 @@ class UserEndpointIntegrationTest {
 
         assertThrows(ResourceNotFoundException.class, () -> userEndpoint.fetchUsersAsFilteredList(userSearchDto));
 
+    }
+
+    @Test
+    public void testCreateUserFail() {
+
+        //given:
+        UserUpdateRequestDto user = new UserUpdateRequestDto();
+        user.setDateOfBirth("2000-02-02");
+
+        //when:
+        ConstraintViolationException thrown = assertThrows(ConstraintViolationException.class, () -> userEndpoint.createUser(user));
+
+        assertThat( thrown.getMessage())
+                .contains("First name is mandatory")
+                .contains("Job title is mandatory")
+                .contains("Last name is mandatory")
+                .contains("User title is mandatory");
     }
 
     @Test
