@@ -1,7 +1,7 @@
 package co.uk.bank.usercrud.user;
 
 import co.uk.bank.usercrud.TestFixtures;
-import co.uk.bank.usercrud.user.dto.UserRequestDto;
+import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ class UserServiceTest {
     @Test
     public void testFindUser() {
         UUID id = UUID.randomUUID();
-        UserRequestDto u = new UserRequestDto(UserTitle.DR, "John", "Silver", TestFixtures.parseDate("2000-02-02"), "Nurse");
+        UserUpdateRequestDto u = new UserUpdateRequestDto(UserTitle.DR, "John", "Silver", "2000-02-02", "Nurse");
         List<User> userList = List.of(TestFixtures.user(id, UserTitle.DR, "John", "Silver"));
 
         when(userRepository.findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString())).thenReturn(userList);

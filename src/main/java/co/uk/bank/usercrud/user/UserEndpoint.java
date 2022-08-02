@@ -14,7 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,11 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static co.uk.bank.usercrud.user.dto.UserDtoAssembler.toUserResponseDto;
-import static co.uk.bank.usercrud.user.dto.UserDtoAssembler.toUserResponseDtos;
 
+@Validated
 @RestController
-@RequestMapping("/api")
+@RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserEndpoint {
 
     @Autowired
@@ -38,6 +39,9 @@ public class UserEndpoint {
 
     @Autowired
     private PagedResourcesAssembler<User> pagedResourcesAssembler;
+
+    @Autowired
+    private UserDtoAssembler userDtoAssembler;
 
 
     /**
@@ -54,7 +58,7 @@ public class UserEndpoint {
         List<User> users = userService.fetchFilteredUserDataAsList(userSearchDto.getFirstName(), userSearchDto.getLastName(), userSearchDto.getId());
         if (users.isEmpty())  throw new ResourceNotFoundException("User not found");
 
-        return toUserResponseDtos(users);
+        return userDtoAssembler.toUserResponseDtos(users);
     }
 
     @Operation(summary = "Add a new User", description = "", tags = { "user" })
@@ -63,8 +67,8 @@ public class UserEndpoint {
                     content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input") })
     @PostMapping("/v1/user")
-    public Map<String, UUID> createUser(@Parameter(description="User to add. Cannot be null or empty.",required=true, schema=@Schema(implementation = UserRequestDto.class))
-                                        @Valid @RequestBody UserRequestDto userDetails) {
+    public Map<String, UUID> createUser(@Parameter(description="User to add. Cannot be null or empty.",required=true, schema=@Schema(implementation = UserUpdateRequestDto.class))
+                                        @Valid @RequestBody UserUpdateRequestDto userDetails) {
         Map <String, UUID> response = new HashMap<>();
         response.put("id", userService.saveUser(userDetails).getId());
 
@@ -77,11 +81,11 @@ public class UserEndpoint {
             @ApiResponse(responseCode = "404", description = "User not found") })
     @PutMapping("/v1/user/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@Parameter(description="Id of the user to be update. Cannot be empty.", required=true) @PathVariable(value = "id") UUID id,
-                                                      @Valid @RequestBody UserRequestDto userDetails) throws ResourceNotFoundException {
+                                                      @Valid @RequestBody UserUpdateRequestDto userDetails) throws ResourceNotFoundException {
         User user = userService.findUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + id));
 
-        return ResponseEntity.ok(toUserResponseDto(userService.updateUser(user, userDetails)));
+        return ResponseEntity.ok(userDtoAssembler.toUserResponseDto(userService.updateUser(user, userDetails)));
     }
 
     @Operation(summary = "Soft Delete an existing user", description = "", tags = { "user" })

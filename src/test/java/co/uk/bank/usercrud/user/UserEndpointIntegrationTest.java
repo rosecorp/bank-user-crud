@@ -1,8 +1,9 @@
 package co.uk.bank.usercrud.user;
 
-import co.uk.bank.usercrud.user.dto.UserRequestDto;
+import co.uk.bank.usercrud.user.dto.UserResponseDto;
+import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
 import co.uk.bank.usercrud.user.dto.UserSearchDto;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static co.uk.bank.usercrud.TestFixtures.parseDate;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("test")
@@ -30,11 +32,16 @@ class UserEndpointIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    public void beforeEach() {
+        userRepository.deleteAll();
+    }
+
     @Test
     public void testCreateUser() {
 
         //given:
-        @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", parseDate("2000-02-02"), "IT dude");
+        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
         //when:
         Map<String, UUID> createdUser = userEndpoint.createUser(user);
@@ -55,18 +62,38 @@ class UserEndpointIntegrationTest {
 
     @Test
     public void testUpdateUser() {
+        //given:
+        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
+        //when:
+        Map<String, UUID> createdUser = userEndpoint.createUser(user);
 
+        //then:
+        userExistsInRepository(createdUser);
+
+        //and:
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
+        userUpdateRequestDto.setTitle(UserTitle.DR);
+        userUpdateRequestDto.setFirstName("Betty");
+        userUpdateRequestDto.setLastName("Black");
+        userUpdateRequestDto.setDateOfBirth("2000-02-02");
+        userUpdateRequestDto.setJobTitle("Nurse");
+        userEndpoint.updateUser(createdUser.get("id"), userUpdateRequestDto);
+
+        //then:
+        UserSearchDto search = new UserSearchDto();
+        search.setFirstName("Betty");
+        List<UserResponseDto> userResponseDtos = userEndpoint.fetchUsersAsFilteredList(search);
+
+        assertThat(userResponseDtos).isNotEmpty();
     }
-
-
 
     private void userExistsInRepository(Map<String, UUID> createdUser) {
         //when:
         List<User> allUsers = userRepository.findAll();
 
         //then:
-        Assertions.assertThat(allUsers).first()
+        assertThat(allUsers).first()
                 .hasFieldOrPropertyWithValue("id", createdUser.get("id"))
                 .hasFieldOrPropertyWithValue("firstName", "Jacob")
                 .hasFieldOrPropertyWithValue("lastName", "Black")
