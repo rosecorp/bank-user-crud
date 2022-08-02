@@ -1,6 +1,7 @@
 package co.uk.bank.usercrud.user;
 
 import co.uk.bank.usercrud.TestFixtures;
+import co.uk.bank.usercrud.user.dto.UserDtoAssembler;
 import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,10 +24,12 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserDtoAssembler userDtoAssembler;
+
     @Test
     public void testFindUser() {
         UUID id = UUID.randomUUID();
-        UserUpdateRequestDto u = new UserUpdateRequestDto(UserTitle.DR, "John", "Silver", "2000-02-02", "Nurse");
         List<User> userList = List.of(TestFixtures.user(id, UserTitle.DR, "John", "Silver"));
 
         when(userRepository.findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString())).thenReturn(userList);
@@ -35,6 +38,44 @@ class UserServiceTest {
 
         assertEquals(1, users.size());
         verify(userRepository, times(1)).findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString());
+    }
+
+    @Test
+    public void testCreateUser() {
+        UUID id = UUID.randomUUID();
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(UserTitle.DR, "John", "Silver", "2000-02-02", "Nurse");
+        User user = TestFixtures.user(id, UserTitle.DR, "John", "Silver");
+
+        when(userDtoAssembler.toUser(userUpdateRequestDto)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
+
+        User savedUser = userService.saveUser(userUpdateRequestDto);
+
+        assertNotNull(savedUser);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testUpdateUser() {
+        UUID id = UUID.randomUUID();
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(UserTitle.DR, "John", "Silver", "2000-02-02", "Nurse");
+        User user = TestFixtures.user(id, UserTitle.DR, "John", "Silver");
+
+        when(userDtoAssembler.toUser(user, userUpdateRequestDto)).thenReturn(user);
+        when(userRepository.save(user)).thenReturn(user);
+
+        User savedUser = userService.updateUser(user, userUpdateRequestDto);
+
+        assertNotNull(savedUser);
+        verify(userRepository, times(1)).save(user);
+    }
+
+    @Test
+    public void testDeleteUser() {
+        UUID id = UUID.randomUUID();
+
+        userService.deleteUser(id);
+        verify(userRepository, times(1)).deleteById(id);
     }
 
 }
