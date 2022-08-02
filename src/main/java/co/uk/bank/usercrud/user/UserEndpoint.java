@@ -44,13 +44,13 @@ public class UserEndpoint {
      * @param  userSearchDto   Search criteria - firstName, lastName, id
      * @return List<UserResponseDto> users after search
      */
-    @Operation(summary = "Simple API - Find User by first name or last name or id", description = "Simple API - Find user by firstNameFilter or lastNameFilter or idFilter", tags = { "user" })
+    @Operation(summary = "Find User by search criteria", description = "Simple API - Find user by firstNameFilter or lastNameFilter or idFilter", tags = { "user" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "404", description = "User not found") })
     @PostMapping("/v1/users")
-    public List<UserResponseDto> fetchUsersAsFilteredList(@RequestBody UserSearchDto userSearchDto) throws ResourceNotFoundException {
+    public List<UserResponseDto> fetchUsersAsFilteredList(@Parameter(description="Search criteria") @RequestBody UserSearchDto userSearchDto) throws ResourceNotFoundException {
         List<User> users = userService.fetchFilteredUserDataAsList(userSearchDto.getFirstName(), userSearchDto.getLastName(), userSearchDto.getId());
         if (users.isEmpty())  throw new ResourceNotFoundException("User not found");
 
@@ -108,12 +108,13 @@ public class UserEndpoint {
      * @return PagedModel object in Hateoas with users after filtering and sorting
      */
     @PostMapping("/v2/users")
-    @Operation(summary = "Find User by first name or last name in Hateoas Representation", description = "Paginated results with sort order and sort list elements available", tags = { "user" })
+    @Operation(summary = "Find User by search criteria Hateoas Representation", description = "Paginated results with sort order and sort list elements available", tags = { "user" })
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
             @ApiResponse(responseCode = "404", description = "User not found") })
-    public PagedModel<UserPaginationModelDto> fetchUsersWithPagination(@RequestBody UserSearchDto userSearchDto,
+    public PagedModel<UserPaginationModelDto> fetchUsersWithPagination(
+            @Parameter(description="Search criteria") @RequestBody UserSearchDto userSearchDto,
             @Parameter(description="Page number, default 0") @RequestParam(defaultValue = "0") int page,
             @Parameter(description="Results number on the page, default 30") @RequestParam(defaultValue = "30") int size,
             @Parameter(description="number of fields sorted by, default empty") @RequestParam(defaultValue = "") List<String> sortList,
