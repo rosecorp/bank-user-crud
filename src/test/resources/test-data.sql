@@ -1,0 +1,1 @@
+insert into user(id,created_timestamp,date_of_birth,first_name,last_name,job_title,title,deleted) values(RANDOM_UUID(),CURRENT_TIMESTAMP(),'1990-01-01','Averell','Polle','self employed',0,false);
