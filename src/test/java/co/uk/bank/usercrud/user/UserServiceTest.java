@@ -8,10 +8,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static co.uk.bank.usercrud.TestFixtures.createSortOrder;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -38,6 +41,25 @@ class UserServiceTest {
 
         assertEquals(1, users.size());
         verify(userRepository, times(1)).findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString());
+    }
+
+    @Test
+    public void testFindPagedUser() {
+        UUID id = UUID.randomUUID();
+        List<User> userList = List.of(TestFixtures.user(id, UserTitle.DR, "John", "Silver"));
+
+
+        Pageable pageable = PageRequest.of(1, 10, Sort.by(createSortOrder(new ArrayList<>(), null)));
+
+        Page<User> pagedUser = Page.empty();
+        pagedUser.and(userList);
+
+        when(userRepository.findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString(), pageable)).thenReturn(pagedUser);
+
+        Page pagedUsers = userService.fetchUserDataAsPageWithFilteringAndSorting(null, null, id, 1, 10, new ArrayList(), null);
+
+        assertEquals(1, pagedUsers.getTotalPages());
+        verify(userRepository, times(1)).findByFirstNameLikeAndLastNameLikeOrId(null, null, id.toString(), pageable);
     }
 
     @Test
