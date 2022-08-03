@@ -12,6 +12,7 @@ User Bank Application allows performing CRUD operations on the User object.
 5. Encryption for PII data in the data base
 6. NFT testing scripts like K6
 7. Horizontal scaling of the service managed by for instance Kubernetes 
+8. Consider moving even UUID search data for PUT and DELETE operations
 
 ## Summary 
 Application can treat data as follow
