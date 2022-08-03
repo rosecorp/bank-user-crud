@@ -13,6 +13,7 @@ User Bank Application allows performing CRUD operations on the User object.
 6. NFT testing scripts like K6
 7. Horizontal scaling of the service managed by for instance Kubernetes 
 8. Consider moving even UUID search data for PUT and DELETE operations
+9. Switch to the production profile to the production database
 
 ## Summary 
 Application can treat data as follow
@@ -21,6 +22,7 @@ Application can treat data as follow
 3. Update a user
 4. Soft delete users
 5. Filtered and sorted, in HATEOAS format with links to other pages as well
+6. Application has preloaded data from `data.sql` for testing purposes 
 
 ## Goals 
 This application support simple API V1 for basic consumer but also has v2 API that returns data in paginated and sorted format.
