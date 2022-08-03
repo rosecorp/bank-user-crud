@@ -4,13 +4,22 @@
 User Bank Application allows performing CRUD operations on the User object.
 
 # Application Description
+## Todo before production relese
+1. Contract testing for API's between consumers and producers
+2. Security Token normally logic handelled in proxies
+3. Audit tables for auditing operations done by the user
+4. Masking PII data in logs
+5. Encryption for PII data in the data base
+6. NFT testing scripts like K6
+7. Horizontal scaling of the service managed by for instance Kubernetes 
+
 ## Summary 
 Application can treat data as follow
-1. As an object
+1. Filter users using criteria search
 2. Create a user
 3. Update a user
 4. Soft delete users
-5. Filtered and sorted, in Hateo format with links to other pages as well
+5. Filtered and sorted, in HATEOAS format with links to other pages as well
 
 ## Goals 
 This application support simple API V1 for basic consumer but also has v2 API that returns data in paginated and sorted format.
@@ -158,7 +167,7 @@ Response Format:
 ```
 
 
-### Endpoint 3: Soft Delete Users marking them as deleted = true in DB
+### Endpoint 3: Soft Delete Users by marking deleted records as deleted = true in DB
 Request Type: DELETE
 Request Url: http://localhost:8183/api/v1/user/3fa85f64-5717-4562-b3fc-2c963f66afa6
 Description: This url returns the user id after deletion process
@@ -172,7 +181,7 @@ Response Format:
 ### Endpoint 4: User can be created by the POST operation
 Request Type: POST
 Request Url: http://localhost:8183/api/v1/user
-Response Body:
+Request Body:
 ```
 {
     "title": "MR",
@@ -194,7 +203,7 @@ Response Format:
 ### Endpoint 5: User can be updated by the PUT operation
 Request Type: PUT
 Request Url: http://localhost:8183/api/v1/user/3fa85f64-5717-4562-b3fc-2c963f66afa6
-Response Body:
+Request Body:
 ```
 {
     "title": "MR",
@@ -206,13 +215,15 @@ Response Body:
 ```
 
 Description: This url returns the USER object after PUT process
-Response Format:
+Response Format 200:
 ```
 {
-    "title": "MR",
-    "firstName": "Jacob",
-    "lastName": "Smith",
-    "dateOfBirth": "1985-08-01",
-    "jobTitle": "It Developer",
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "title": "MR",
+  "firstName": "string",
+  "lastName": "string",
+  "dateOfBirth": "2022-08-03",
+  "jobTitle": "string",
+  "createdStamp": "2022-08-03T05:38:13.852Z"
 }
 ```
