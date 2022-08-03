@@ -12,23 +12,23 @@ import java.util.stream.Collectors;
 @Component
 public class UserDtoAssembler {
 
-    public User toUser(User user, UserUpdateRequestDto userUpdateRequestDto) {
-        user.setTitle(userUpdateRequestDto.getTitle());
-        user.setFirstName(userUpdateRequestDto.getFirstName());
-        user.setLastName(userUpdateRequestDto.getLastName());
-        user.setJobTitle(userUpdateRequestDto.getJobTitle());
-        user.setDateOfBirth(parseDate(userUpdateRequestDto.getDateOfBirth()));
+    public User toUser(User user, UserRequestDto userRequestDto) {
+        user.setTitle(userRequestDto.getTitle());
+        user.setFirstName(userRequestDto.getFirstName());
+        user.setLastName(userRequestDto.getLastName());
+        user.setJobTitle(userRequestDto.getJobTitle());
+        user.setDateOfBirth(parseDate(userRequestDto.getDateOfBirth()));
 
         return user;
     }
 
-    public User toUser(UserUpdateRequestDto userUpdateRequestDto) {
+    public User toUser(UserRequestDto userRequestDto) {
         User user = new User();
-        user.setTitle(userUpdateRequestDto.getTitle());
-        user.setFirstName(userUpdateRequestDto.getFirstName());
-        user.setLastName(userUpdateRequestDto.getLastName());
-        user.setJobTitle(userUpdateRequestDto.getJobTitle());
-        user.setDateOfBirth(parseDate(userUpdateRequestDto.getDateOfBirth()));
+        user.setTitle(userRequestDto.getTitle());
+        user.setFirstName(userRequestDto.getFirstName());
+        user.setLastName(userRequestDto.getLastName());
+        user.setJobTitle(userRequestDto.getJobTitle());
+        user.setDateOfBirth(parseDate(userRequestDto.getDateOfBirth()));
         return user;
     }
 

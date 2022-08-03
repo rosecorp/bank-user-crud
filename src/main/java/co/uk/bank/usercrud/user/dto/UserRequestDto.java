@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserUpdateRequestDto {
+public class UserRequestDto {
 
     @Schema(description = "User title.", example = "MR", required = true)
     @NotNull(message = "User title is mandatory")
@@ -35,9 +35,9 @@ public class UserUpdateRequestDto {
     @NotBlank(message = "Job title is mandatory")
     private String jobTitle;
 
-    public UserUpdateRequestDto() { }
+    public UserRequestDto() { }
 
-    public UserUpdateRequestDto(UserTitle title, String firstName, String lastName, String dateOfBirth, String jobTitle) {
+    public UserRequestDto(UserTitle title, String firstName, String lastName, String dateOfBirth, String jobTitle) {
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;

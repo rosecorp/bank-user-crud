@@ -1,7 +1,7 @@
 package co.uk.bank.usercrud.user;
 
 import co.uk.bank.usercrud.user.dto.UserDtoAssembler;
-import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
+import co.uk.bank.usercrud.user.dto.UserRequestDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +32,8 @@ public class UserService {
     @Transactional
     @Retryable( value = SQLException.class, maxAttemptsExpression = "${retry.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.maxDelay}"))
-    public User saveUser(UserUpdateRequestDto userUpdateRequestDto) {
-        User savedUser = userRepository.save(userDtoAssembler.toUser(userUpdateRequestDto));
+    public User saveUser(UserRequestDto userRequestDto) {
+        User savedUser = userRepository.save(userDtoAssembler.toUser(userRequestDto));
         logger.debug("User has been created: {}", savedUser);
         return savedUser;
     }
@@ -41,7 +41,7 @@ public class UserService {
     @Transactional
     @Retryable( value = SQLException.class, maxAttemptsExpression = "${retry.maxAttempts}",
             backoff = @Backoff(delayExpression = "${retry.maxDelay}"))
-    public User updateUser (User user, UserUpdateRequestDto userDetails) {
+    public User updateUser (User user, UserRequestDto userDetails) {
         User updatedUser = userRepository.save(userDtoAssembler.toUser(user, userDetails));
         logger.debug("User has been updated: {}", updatedUser);
         return updatedUser;

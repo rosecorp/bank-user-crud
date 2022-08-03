@@ -67,8 +67,8 @@ public class UserEndpoint {
                     content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Invalid input") })
     @PostMapping("/v1/user")
-    public Map<String, UUID> createUser(@Parameter(description="User to add. Cannot be null or empty.",required=true, schema=@Schema(implementation = UserUpdateRequestDto.class))
-                                        @Valid @RequestBody UserUpdateRequestDto userDetails) {
+    public Map<String, UUID> createUser(@Parameter(description="User to add. Cannot be null or empty.",required=true, schema=@Schema(implementation = UserRequestDto.class))
+                                        @Valid @RequestBody UserRequestDto userDetails) {
         Map <String, UUID> response = new HashMap<>();
         response.put("id", userService.saveUser(userDetails).getId());
 
@@ -81,7 +81,7 @@ public class UserEndpoint {
             @ApiResponse(responseCode = "404", description = "User not found") })
     @PutMapping("/v1/user/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@Parameter(description="Id of the user to be update. Cannot be empty.", required=true) @PathVariable(value = "id") UUID id,
-                                                      @Valid @RequestBody UserUpdateRequestDto userDetails) throws ResourceNotFoundException {
+                                                      @Valid @RequestBody UserRequestDto userDetails) throws ResourceNotFoundException {
         User user = userService.findUserById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found for this id :: " + id));
 

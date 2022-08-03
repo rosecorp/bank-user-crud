@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import co.uk.bank.usercrud.user.dto.UserSearchDto;
-import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
+import co.uk.bank.usercrud.user.dto.UserRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ public class UserEndpointTest {
 
     @Test
     public void shouldFailValidationOnSearch() throws Exception {
-        UserUpdateRequestDto updateRequestDto = new UserUpdateRequestDto();
+        UserRequestDto updateRequestDto = new UserRequestDto();
         updateRequestDto.setDateOfBirth("1990-03-03");
 
         this.mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content(asJsonString(updateRequestDto)))
@@ -73,7 +73,7 @@ public class UserEndpointTest {
     public void shouldSearchWithCriteria() throws Exception {
         User user = new User();
         user.setId(UUID.randomUUID());
-        UserUpdateRequestDto updateRequestDto = new UserUpdateRequestDto(UserTitle.MISS, "Betty", "Clark", "2000-01-02","IT Dev");
+        UserRequestDto updateRequestDto = new UserRequestDto(UserTitle.MISS, "Betty", "Clark", "2000-01-02","IT Dev");
         when(mockService.saveUser(any())).thenReturn(user);
 
         this.mockMvc.perform(post("/api/v1/user").contentType(MediaType.APPLICATION_JSON).content(asJsonString(updateRequestDto)))

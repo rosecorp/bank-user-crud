@@ -1,7 +1,7 @@
 package co.uk.bank.usercrud.user;
 
 import co.uk.bank.usercrud.user.dto.UserResponseDto;
-import co.uk.bank.usercrud.user.dto.UserUpdateRequestDto;
+import co.uk.bank.usercrud.user.dto.UserRequestDto;
 import co.uk.bank.usercrud.user.dto.UserSearchDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class UserEndpointIntegrationTest {
     public void testCreateUser() {
 
         //given:
-        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+        @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
         //when:
         Map<String, UUID> createdUser = userEndpoint.createUser(user);
@@ -65,7 +65,7 @@ class UserEndpointIntegrationTest {
     public void testCreateUserFail() {
 
         //given:
-        UserUpdateRequestDto user = new UserUpdateRequestDto();
+        UserRequestDto user = new UserRequestDto();
         user.setDateOfBirth("2000-02-02");
 
         //when:
@@ -81,7 +81,7 @@ class UserEndpointIntegrationTest {
     @Test
     public void testUpdateUser() {
         //given:
-        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+        @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
         //when:
         Map<String, UUID> createdUser = userEndpoint.createUser(user);
@@ -90,13 +90,13 @@ class UserEndpointIntegrationTest {
         userExistsInRepository(createdUser);
 
         //and:
-        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto();
-        userUpdateRequestDto.setTitle(UserTitle.DR);
-        userUpdateRequestDto.setFirstName("Betty");
-        userUpdateRequestDto.setLastName("Black");
-        userUpdateRequestDto.setDateOfBirth("2000-02-02");
-        userUpdateRequestDto.setJobTitle("Nurse");
-        userEndpoint.updateUser(createdUser.get("id"), userUpdateRequestDto);
+        UserRequestDto userRequestDto = new UserRequestDto();
+        userRequestDto.setTitle(UserTitle.DR);
+        userRequestDto.setFirstName("Betty");
+        userRequestDto.setLastName("Black");
+        userRequestDto.setDateOfBirth("2000-02-02");
+        userRequestDto.setJobTitle("Nurse");
+        userEndpoint.updateUser(createdUser.get("id"), userRequestDto);
 
         //then:
         UserSearchDto search = new UserSearchDto();
@@ -109,7 +109,7 @@ class UserEndpointIntegrationTest {
     @Test
     public void testFetchUser() {
         //given:
-        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+        @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
         //when:
         Map<String, UUID> createdUser = userEndpoint.createUser(user);
@@ -132,7 +132,7 @@ class UserEndpointIntegrationTest {
     @Test
     public void testDeleteUser() {
         //given:
-        @Valid UserUpdateRequestDto user = new UserUpdateRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
+        @Valid UserRequestDto user = new UserRequestDto(UserTitle.MR, "Jacob", "Black", "2000-02-02", "IT dude");
 
         //when:
         Map<String, UUID> createdUser = userEndpoint.createUser(user);
