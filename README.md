@@ -1,5 +1,4 @@
 [![Build Status](https://app.travis-ci.com/rosecorp/bank-user-crud.svg?branch=main)](https://app.travis-ci.com/rosecorp/bank-user-crud)
-[![Code Coverage](https://codecov.io/github/joaomlneto/travis-ci-tutorial-java/coverage.svg)](https://app.travis-ci.com/rosecorp/bank-user-crud)
 
 # User Bank Application
 User Bank Application allows performing CRUD operations on the User object.
